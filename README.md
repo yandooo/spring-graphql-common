@@ -26,7 +26,7 @@
 
 # Spring Framework GraphQL Library
 
-[![Build Status](https://travis-ci.org/oembedler/spring-graphql-common.svg?branch=master)](https://travis-ci.org/oembedler/spring-graphql)   [ ![Download](https://api.bintray.com/packages/oembedler/maven/spring-graphql-common/images/download.svg) ](https://bintray.com/oembedler/maven/spring-graphql-common/_latestVersion)
+[![Build Status](https://travis-ci.org/oembedler/spring-graphql-common.svg?branch=master)](https://travis-ci.org/oembedler/spring-graphql-common)   [ ![Download](https://api.bintray.com/packages/oembedler/maven/spring-graphql-common/images/download.svg) ](https://bintray.com/oembedler/maven/spring-graphql-common/_latestVersion)
 
 # Intro
 
