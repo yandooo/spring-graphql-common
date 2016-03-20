@@ -1,0 +1,11 @@
+query RootNodesQuery {
+   color(id:"color-id-1"){
+      id
+   },
+   dynamic(id:"dynamic-id-1"){
+      id
+   },
+   any(id:"any-id-1"){
+      id
+   }
+}

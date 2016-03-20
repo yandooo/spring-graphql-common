@@ -1,0 +1,31 @@
+query ViewerTodosQuery {
+  version,
+  viewer{
+    id,
+    name,
+    role,
+    manager(ids:["id1","id2"]){
+       id,
+       name,
+       role,
+       manager {
+          id,
+          name,
+          role,
+          manager {
+            id,
+            name,
+            role,
+            manager{
+              id,
+              name,
+              role,
+              manager{
+                 id
+              }
+            }
+          }
+       }
+    }
+  }
+}

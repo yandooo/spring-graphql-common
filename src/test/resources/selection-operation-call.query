@@ -1,0 +1,19 @@
+query TodoQuery {
+  node(id: "123456789") {
+    id
+    ... on Todo {
+              id,
+              text,
+              updated
+           }
+  }
+}
+query UserQuery {
+  node(id: "1234567890") {
+    id
+    ... on User {
+              id,
+              role
+           }
+  }
+}

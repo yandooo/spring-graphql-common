@@ -1,0 +1,12 @@
+mutation addTodoMutationQuery {
+  addTodoMutation(input: {clientMutationId: "uuid-123", addTodoInput:{text: "text"}}) {
+    todoEdge{
+       node{
+          text,
+          complete
+       },
+       cursor
+    }
+    clientMutationId
+  }
+}

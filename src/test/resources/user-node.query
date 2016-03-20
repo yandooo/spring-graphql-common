@@ -1,0 +1,10 @@
+query UserQuery {
+  node(id: "123456789") {
+    id
+    ... on Todo {
+              id,
+              text,
+              updated
+           }
+  }
+}

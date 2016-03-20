@@ -1,0 +1,173 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016 oEmbedler Inc. and Contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ *  documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+ *  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+ *  persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+import java.text.SimpleDateFormat
+
+buildscript {
+    repositories {
+        maven { url 'http://repo.spring.io/plugins-release' }
+    }
+    dependencies {
+        classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
+    }
+}
+
+plugins {
+    id "com.jfrog.bintray" version "1.4"
+}
+
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'groovy'
+apply plugin: 'maven-publish'
+apply plugin: 'propdeps'
+apply plugin: 'propdeps-maven'
+apply plugin: 'propdeps-idea'
+apply plugin: 'propdeps-eclipse'
+
+
+def releaseVersion = System.properties.RELEASE_VERSION
+version = releaseVersion ? releaseVersion : PROJECT_VERSION + '-' + new SimpleDateFormat('yyyy-MM-dd\'T\'HH-mm-ss').format(new Date())
+group = PROJECT_GROUP
+
+repositories {
+    jcenter()
+}
+
+idea {
+    project {
+        jdkName = TARGET_COMPATIBILITY
+        languageLevel = TARGET_COMPATIBILITY
+        vcs = VCS
+    }
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+compileJava {
+    sourceCompatibility = SOURCE_COMPATIBILITY
+    targetCompatibility = TARGET_COMPATIBILITY
+}
+
+jar {
+    from "LICENSE.md"
+}
+
+dependencies {
+    compile "org.springframework:spring-core:$LIB_SPRING_FRAMEWORK_VER"
+    compile "org.springframework:spring-context:$LIB_SPRING_FRAMEWORK_VER"
+    compile "com.graphql-java:graphql-java:$LIB_JAVA_GRAPHQL_VER"
+    compile "org.reflections:reflections:$LIB_JAVA_RELFECTIONS_VER"
+    compile "org.apache.commons:commons-lang3:$LIB_APACHE_COMMON_LANG_VER"
+    compile "com.fasterxml.jackson.core:jackson-core:$LIB_JACKSON_CORE_VER"
+    compile "com.fasterxml.jackson.core:jackson-databind:$LIB_JACKSON_CORE_VER"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$LIB_JACKSON_CORE_VER"
+    compile "io.reactivex:rxjava:$LIB_JAVA_RX_VER"
+    compile "io.reactivex:rxjava-math:$LIB_JAVA_RX_MATH_VER"
+    //compile "io.reactivex:rxjava-async-util:$LIB_JAVA_RX_ASYNC_VER"
+
+    testCompile "org.springframework:spring-test:$LIB_SPRING_FRAMEWORK_VER"
+    testCompile "ch.qos.logback:logback-classic:$LIB_LOGBACK_CLASSIC"
+    testCompile "junit:junit:$LIB_JUNIT_VER"
+    //testCompile "org.spockframework:spock-core:$LIB_JAVA_SPOCK_FRAMEWORK_VER"
+    //testCompile "org.codehaus.groovy:groovy-all:$LIB_GROOVY_VER"
+    //testCompile "cglib:cglib-nodep:$LIB_CGI_LIB_VER"
+    //testCompile "org.objenesis:objenesis:$LIB_OBJENESIS_LIB"
+}
+
+task sourcesJar(type: Jar) {
+    dependsOn classes
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+
+publishing {
+    publications {
+        mainProjectPublication(MavenPublication) {
+            version version
+            from components.java
+
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+            pom.withXml {
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    name PROJECT_NAME
+                    description PROJECT_DESC
+                    url PROJECT_GIT_REPO_URL
+                    scm {
+                        url PROJECT_GIT_REPO_URL
+                        connection PROJECT_GIT_REPO_URL
+                        developerConnection PROJECT_GIT_REPO_URL
+                    }
+                    licenses {
+                        license {
+                            name PROJECT_LICENSE
+                            url PROJECT_LICENSE_URL
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id PROJECT_DEV_ID
+                            name PROJECT_DEV_NAME
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+bintray {
+    user = System.env.BINTRAY_USER ?: project["bintray.user"]
+    key = System.env.BINTRAY_API_KEY ?: project["bintray.key"]
+    publications = ['mainProjectPublication']
+    publish = true
+    pkg {
+        repo = 'maven'
+        name = PROJECT_NAME
+        desc = PROJECT_DESC
+        licenses = [PROJECT_LICENSE]
+        vcsUrl = PROJECT_GIT_REPO_URL
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "${GRADLE_WRAPPER_VER}"
+}

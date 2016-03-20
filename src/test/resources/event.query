@@ -1,0 +1,3 @@
+query EventQuery {
+  event(id: "9223372036854775807")
+}

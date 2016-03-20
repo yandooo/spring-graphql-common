@@ -1,0 +1,12 @@
+mutation addTodoMutationQuery($variables: addTodoMutationInput!) {
+  addTodoMutation(variables: $variables) {
+    todoEdge{
+       node{
+          text,
+          complete
+       },
+       cursor
+    }
+    clientMutationId
+  }
+}
