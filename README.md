@@ -325,7 +325,7 @@ The return value of the method must be of the same type (derived type) as define
 Mutation must be declared in the class marked as `@GraphQLSchema` annotation.
 Use `@GraphQLMutation` annotation to mark method as a GraphQL Mutation.
 Input method parameters are input `variables`.
-Method returned result is mutation output object to query.
+Method returned result is a mutation nested nodes.
 
 ```java
 
