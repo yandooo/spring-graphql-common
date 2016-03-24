@@ -61,6 +61,7 @@ public class TodoSchema {
         return addTodoInput;
     }
 
+    @GraphQLDescription("Mutation to add new todo item")
     @GraphQLMutation("addTodoMutation")
     public
     @GraphQLOut("todoEdge")

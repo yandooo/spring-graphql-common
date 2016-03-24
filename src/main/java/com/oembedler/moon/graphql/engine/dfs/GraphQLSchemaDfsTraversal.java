@@ -469,6 +469,7 @@ public class GraphQLSchemaDfsTraversal {
 
                 GraphQLFieldDefinition.Builder fieldBuilder = newFieldDefinition()
                         .name(mutationName)
+                        .description(methodReturnTypeResolvableTypeAccessor.getDescription())
                         .deprecate(methodReturnTypeResolvableTypeAccessor.getGraphQLDeprecationReason())
                         .type(graphQLOutputObjectType)
                         .dataFetcher(new ReflectionGraphQLDataMutator(graphQLSchemaConfig, object, method));
