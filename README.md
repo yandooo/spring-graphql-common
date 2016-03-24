@@ -54,7 +54,7 @@ The query execution strategy for the READ and MUTATE queries is based on RxJava 
   * java-graphql v2.0+
   * Reflections v0.9.10
   * Apache Commons Lang v3.4
-  * Jackson v2.7.0
+  * Jackson v2.6.x
   * RxJava v1.1.1
   * RxJava Math v1.0.0
   * Slf4j 
