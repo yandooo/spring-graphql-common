@@ -30,13 +30,10 @@ import java.util.Date;
 @GraphQLObject("Root")
 public class RootObjectType {
 
-    @GraphQLField
     @GraphQLNonNull
+    @GraphQLField("version")
     @GraphQLDescription("GraphQL Schema Version")
-    @GraphQLComplexity("0")
-    public String version() {
-        return "1.0";
-    }
+    public final static String VERSION = "2.0";
 
     @GraphQLField
     public UserObjectType viewer(/** no input parameters expected **/) {

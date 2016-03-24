@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -281,13 +282,17 @@ public class GraphQLSchemaDfsTraversal {
 
         if (resolvableTypeAccessor.isNotIgnorable()) {
             GraphQLOutputType graphQLOutputType = (GraphQLOutputType) createGraphQLFieldType(dfsContext, resolvableTypeAccessor, true);
-            graphQLFieldDefinition = GraphQLFieldDefinition.newFieldDefinition()
+            GraphQLFieldDefinition.Builder graphQLFieldDefinitionBuilder = GraphQLFieldDefinition.newFieldDefinition()
                     .name(resolvableTypeAccessor.getName())
                     .type(graphQLOutputType)
                     .deprecate(resolvableTypeAccessor.getGraphQLDeprecationReason())
-                    .description(resolvableTypeAccessor.getDescription())
-                    .build();
+                    .description(resolvableTypeAccessor.getDescription());
 
+            boolean isConstant = Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers());
+            if (isConstant) {
+                graphQLFieldDefinitionBuilder.staticValue(org.springframework.util.ReflectionUtils.getField(field, null));
+            }
+            graphQLFieldDefinition = graphQLFieldDefinitionBuilder.build();
             addToFieldDefinitionResolverMap(dfsContext, graphQLFieldDefinition, resolvableTypeAccessor.getGraphQLComplexitySpelExpression());
         }
 
