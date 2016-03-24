@@ -99,7 +99,7 @@ public class ReflectionGraphQLDataMutator implements DataFetcher {
     }
 
     public Object[] collectBindByClassValues(DataFetchingEnvironment environment) {
-        Object[] bindByClassValues = new Object[]{environment.getSource(), environment.getContext()};
+        Object[] bindByClassValues = new Object[]{environment, environment.getSource(), environment.getContext()};
         return bindByClassValues;
     }
 
