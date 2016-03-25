@@ -41,4 +41,36 @@ public class PageInfoObjectType {
 
     @GraphQLDescription("When paginating forwards, the cursor to continue.")
     private String endCursor;
+
+    public Boolean getHasNextPage() {
+        return hasNextPage;
+    }
+
+    public void setHasNextPage(Boolean hasNextPage) {
+        this.hasNextPage = hasNextPage;
+    }
+
+    public Boolean getHasPreviousPage() {
+        return hasPreviousPage;
+    }
+
+    public void setHasPreviousPage(Boolean hasPreviousPage) {
+        this.hasPreviousPage = hasPreviousPage;
+    }
+
+    public String getStartCursor() {
+        return startCursor;
+    }
+
+    public void setStartCursor(String startCursor) {
+        this.startCursor = startCursor;
+    }
+
+    public String getEndCursor() {
+        return endCursor;
+    }
+
+    public void setEndCursor(String endCursor) {
+        this.endCursor = endCursor;
+    }
 }
