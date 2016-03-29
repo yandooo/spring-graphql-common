@@ -45,7 +45,7 @@ The entire schema lives in Spring context which means developer can leverage all
 There is one important dependency on [graphql-java](https://github.com/andimarek/graphql-java) for schema imperative building and GraphQL query execution.
 The query execution strategy for the READ and MUTATE queries is based on RxJava Observables with optional feature to add desired level of concurrency.
 
-`graphql-spring-boot-starter` and `graphiql-spring-boot-starter` are available in [this repository](https://github.com/oembedler/graphql-spring-boot).
+`graphql-spring-boot-starter` and `graphiql-spring-boot-starter` are available in [graphql-spring-boot repository](https://github.com/oembedler/graphql-spring-boot).
 
 # Requires
 
