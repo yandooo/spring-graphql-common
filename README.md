@@ -63,7 +63,9 @@ some of the dependencies can be removed in the future.
 
 ```gradle
 repositories {
-    mavenCentral()
+    // stable build
+    jcenter()
+    // development build
     maven { url  "http://dl.bintray.com/oembedler/maven" }
 }
 ```
