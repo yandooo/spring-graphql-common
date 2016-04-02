@@ -3,11 +3,5 @@ jdk:
   - oraclejdk8
 before_install:
  - chmod +x gradlew
-before_script:
- - export TRAVIS_TAG=$TRAVIS_TAG
- - echo $TRAVIS_TAG
-script:
- - ./gradlew assemble -DTRAVIS_TAG=$TRAVIS_TAG
- - ./gradlew check -DTRAVIS_TAG=$TRAVIS_TAG
 after_success:
   - ./gradlew bintrayUpload -x check --info

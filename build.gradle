@@ -42,7 +42,7 @@ apply plugin: 'propdeps-maven'
 apply plugin: 'propdeps-idea'
 apply plugin: 'propdeps-eclipse'
 
-version = System.properties.TRAVIS_TAG ? PROJECT_VERSION : PROJECT_VERSION + '-' + new SimpleDateFormat('yyyy-MM-dd\'T\'HH-mm-ss').format(new Date())
+version = System.env.TRAVIS_TAG ? PROJECT_VERSION : PROJECT_VERSION + '-' + new SimpleDateFormat('yyyy-MM-dd\'T\'HH-mm-ss').format(new Date())
 group = PROJECT_GROUP
 
 repositories {
