@@ -2,6 +2,9 @@ language: java
 jdk:
   - oraclejdk8
 before_install:
- - chmod +x gradlew  
+ - chmod +x gradlew
+script:
+ - ./gradlew assemble -DTRAVIS_TAG=$TRAVIS_TAG
+ - ./gradlew check -DTRAVIS_TAG=$TRAVIS_TAG
 after_success:
   - ./gradlew bintrayUpload -x check --info
