@@ -42,9 +42,8 @@ apply plugin: 'propdeps-maven'
 apply plugin: 'propdeps-idea'
 apply plugin: 'propdeps-eclipse'
 
-
-def releaseVersion = System.properties.RELEASE_VERSION
-version = releaseVersion ? releaseVersion : PROJECT_VERSION + '-' + new SimpleDateFormat('yyyy-MM-dd\'T\'HH-mm-ss').format(new Date())
+def releaseVersion =
+version = System.env.TRAVIS_TAG ? PROJECT_VERSION : PROJECT_VERSION + '-' + new SimpleDateFormat('yyyy-MM-dd\'T\'HH-mm-ss').format(new Date())
 group = PROJECT_GROUP
 
 repositories {
