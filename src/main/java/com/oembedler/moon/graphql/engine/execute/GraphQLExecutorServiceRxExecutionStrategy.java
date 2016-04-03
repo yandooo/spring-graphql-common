@@ -21,7 +21,6 @@ package com.oembedler.moon.graphql.engine.execute;
 
 import com.oembedler.moon.graphql.engine.GraphQLSchemaHolder;
 import graphql.ExecutionResult;
-import graphql.GraphQLException;
 import graphql.execution.ExecutionContext;
 import graphql.language.Field;
 import graphql.schema.GraphQLObjectType;
@@ -33,10 +32,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.RecursiveTask;
 
 /**
  * Idea was borrowed from <a href="https://github.com/nfl/graphql-rxjava"></a>
@@ -54,36 +51,30 @@ class GraphQLExecutorServiceRxExecutionStrategy extends GraphQLDefaultRxExecutio
 
     public ExecutionResult doExecute(ExecutionContext executionContext, GraphQLObjectType parentType, Object source, Map<String, List<Field>> fields) {
 
-        Map<String, Future<ExecutionResult>> futures = new LinkedHashMap<String, Future<ExecutionResult>>();
+        Map<String, RecursiveTask<ExecutionResult>> recursiveTaskMap = new LinkedHashMap<String, RecursiveTask<ExecutionResult>>();
         for (String fieldName : fields.keySet()) {
             final List<Field> fieldList = fields.get(fieldName);
-            Callable<ExecutionResult> resolveField = new Callable<ExecutionResult>() {
+            RecursiveTask<ExecutionResult> resolveField = new RecursiveTask<ExecutionResult>() {
                 @Override
-                public ExecutionResult call() throws Exception {
+                protected ExecutionResult compute() {
                     return resolveField(executionContext, parentType, source, fieldList);
-
                 }
             };
-            futures.put(fieldName, executorService.submit(resolveField));
+            resolveField.fork();
+            recursiveTaskMap.put(fieldName, resolveField);
         }
 
         List<Observable<Pair<String, Object>>> observablesResult = new ArrayList<>();
         List<Observable<Double>> observablesComplexity = new ArrayList<>();
 
-        try {
-            for (String fieldName : futures.keySet()) {
-                List<Field> fieldList = fields.get(fieldName);
-                ExecutionResult executionResult = futures.get(fieldName).get();
+        for (String fieldName : recursiveTaskMap.keySet()) {
+            List<Field> fieldList = fields.get(fieldName);
+            ExecutionResult executionResult = recursiveTaskMap.get(fieldName).join();
 
-                observablesResult.add(unwrapExecutionResult(fieldName, executionResult));
-                observablesComplexity.add(calculateFieldComplexity(executionContext, parentType, fieldList,
-                        executionResult != null ? ((GraphQLRxExecutionResult) executionResult).getComplexityObservable() : Observable.just(0.0)));
+            observablesResult.add(unwrapExecutionResult(fieldName, executionResult));
+            observablesComplexity.add(calculateFieldComplexity(executionContext, parentType, fieldList,
+                    executionResult != null ? ((GraphQLRxExecutionResult) executionResult).getComplexityObservable() : Observable.just(0.0)));
 
-            }
-        } catch (InterruptedException e) {
-            throw new GraphQLException(e);
-        } catch (ExecutionException e) {
-            throw new GraphQLException(e);
         }
 
         Observable<Map<String, Object>> result =
