@@ -46,6 +46,7 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.concurrent.Executors;
 
 /**
  * @author <a href="mailto:java.lang.RuntimeException@gmail.com">oEmbedler Inc.</a>
@@ -89,6 +90,8 @@ public class GenericComputationDelaySchemaParserTest {
     @Autowired
     public GraphQLSchemaHolder graphQLSchemaHolder;
 
+    public int parallelism = 2;
+
     private Object prettifyPrint(Object input) {
         try {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(input);
@@ -111,10 +114,11 @@ public class GenericComputationDelaySchemaParserTest {
     }
 
     @Test
-    public void introspectionQuery_Success() throws IOException {
+    public void concurrentIntrospectionQueryForkJoin_Success() throws IOException {
         GraphQLRxExecutionResult result =
                 GraphQLQueryExecutor
                         .create(graphQLSchemaHolder)
+                        .forkJoinExecutorService(parallelism)
                         .query(getClasspathResourceAsString("introspection.query"))
                         .execute();
 
@@ -123,12 +127,38 @@ public class GenericComputationDelaySchemaParserTest {
     }
 
     @Test
-    public void concurrentExecutionQuery_Success() throws IOException {
+    public void concurrentExecutionQueryForkJoin_Success() throws IOException {
         GraphQLRxExecutionResult result =
                 GraphQLQueryExecutor
                         .create(graphQLSchemaHolder)
-                        .forkJoinExecutorService()
+                        .forkJoinExecutorService(parallelism)
                         .query(getClasspathResourceAsString("root-nodes.query"))
+                        .execute();
+
+        Assert.assertTrue(result.getErrors().size() == 0);
+        LOGGER.info("Complexity: {}. Result: {}", result.getComplexity(), prettifyPrint(result.getData()));
+    }
+
+    @Test
+    public void concurrentExecutionQueryFixedThreadPool_Success() throws IOException {
+        GraphQLRxExecutionResult result =
+                GraphQLQueryExecutor
+                        .create(graphQLSchemaHolder)
+                        .executorService(Executors.newFixedThreadPool(parallelism))
+                        .query(getClasspathResourceAsString("root-nodes.query"))
+                        .execute();
+
+        Assert.assertTrue(result.getErrors().size() == 0);
+        LOGGER.info("Complexity: {}. Result: {}", result.getComplexity(), prettifyPrint(result.getData()));
+    }
+
+    @Test
+    public void concurrentIntrospectionQueryFixedThreadPool_Success() throws IOException {
+        GraphQLRxExecutionResult result =
+                GraphQLQueryExecutor
+                        .create(graphQLSchemaHolder)
+                        .executorService(Executors.newFixedThreadPool(parallelism))
+                        .query(getClasspathResourceAsString("introspection.query"))
                         .execute();
 
         Assert.assertTrue(result.getErrors().size() == 0);
@@ -141,6 +171,18 @@ public class GenericComputationDelaySchemaParserTest {
                 GraphQLQueryExecutor
                         .create(graphQLSchemaHolder)
                         .query(getClasspathResourceAsString("root-nodes.query"))
+                        .execute();
+
+        Assert.assertTrue(result.getErrors().size() == 0);
+        LOGGER.info("Complexity: {}. Result: {}", result.getComplexity(), prettifyPrint(result.getData()));
+    }
+
+    @Test
+    public void serialIntrospectionQuery_Success() throws IOException {
+        GraphQLRxExecutionResult result =
+                GraphQLQueryExecutor
+                        .create(graphQLSchemaHolder)
+                        .query(getClasspathResourceAsString("introspection.query"))
                         .execute();
 
         Assert.assertTrue(result.getErrors().size() == 0);
