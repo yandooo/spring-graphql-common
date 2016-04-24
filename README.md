@@ -43,7 +43,11 @@ It will be helpful for those who starts coding schema from scratch or upgrading 
 The library facilitates GraphQL schema development in SpringFramework environment heavily using annotations.
 The entire schema lives in Spring context which means developer can leverage all Spring features like AOP, IO etc.
 There is one important dependency on [graphql-java](https://github.com/andimarek/graphql-java) for schema imperative building and GraphQL query execution.
-The query execution strategy for the READ and MUTATE queries is based on RxJava Observables with optional feature to add desired level of concurrency.
+The query execution strategy for the READ and MUTATE queries is based on Reactor Reactive Streams with high level of parallelism.
+
+**Note**: _process has been started on moving to complete Reactor RS Stack leveraging Netty GraphQL NIO server (spring boot starters should be updated as well). 
+Reactor execution strategy will be the only one available in the future releases. 
+RxJava-based strategies are deprecated and won't be maintained anymore._
 
 `graphql-spring-boot-starter` and `graphiql-spring-boot-starter` are available in [graphql-spring-boot repository](https://github.com/oembedler/graphql-spring-boot).
 
@@ -55,8 +59,8 @@ The query execution strategy for the READ and MUTATE queries is based on RxJava 
   * Reflections v0.9.10
   * Apache Commons Lang v3.4
   * Jackson v2.6.x
-  * RxJava v1.1.1
-  * RxJava Math v1.0.0
+  * RxJava v1.1.1  **deprecated**
+  * RxJava Math v1.0.0  **deprecated**
   * Slf4j 
 
 some of the dependencies can be removed in the future.
