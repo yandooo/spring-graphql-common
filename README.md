@@ -46,7 +46,7 @@ There is one important dependency on [graphql-java](https://github.com/andimarek
 The query execution strategy for the READ and MUTATE queries is based on Reactor Reactive Streams with high level of parallelism.
 
 **Note**: _process has been started on moving to complete Reactor RS Stack leveraging Netty GraphQL NIO server (spring boot starters should be updated as well). 
-Reactor execution strategy will be the only one available in the future releases. 
+Reactor execution strategy will be strategic one available in the future releases. 
 RxJava-based strategies are deprecated and won't be maintained anymore._
 
 `graphql-spring-boot-starter` and `graphiql-spring-boot-starter` are available in [graphql-spring-boot repository](https://github.com/oembedler/graphql-spring-boot).
