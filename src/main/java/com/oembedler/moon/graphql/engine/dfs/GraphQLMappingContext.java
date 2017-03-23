@@ -20,14 +20,10 @@
 package com.oembedler.moon.graphql.engine.dfs;
 
 import com.oembedler.moon.graphql.engine.GraphQLSchemaConfig;
-import com.oembedler.moon.graphql.engine.type.GraphQLDateType;
-import com.oembedler.moon.graphql.engine.type.GraphQLLocalDateTimeType;
 import graphql.schema.GraphQLScalarType;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Type;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * @author <a href="mailto:java.lang.RuntimeException@gmail.com">oEmbedler Inc.</a>
@@ -43,26 +39,17 @@ public class GraphQLMappingContext {
 
     public GraphQLScalarType getScalarGraphQLType(final Type cls) {
         GraphQLScalarType graphQLScalarType = MappingConstants.getScalarGraphQLType(cls);
-        if (Date.class.isAssignableFrom((Class<?>) cls)) {
-            if (graphQLSchemaConfig.isDateAsTimestamp())
-                graphQLScalarType = MappingConstants.graphQLTimestamp;
-            else
-                graphQLScalarType = getGraphQLDateType();
-        } else if (LocalDateTime.class.isAssignableFrom((Class<?>) cls)) {
-            if (graphQLSchemaConfig.isDateAsTimestamp())
-                graphQLScalarType = MappingConstants.graphQLTimestamp;
-            else
-                graphQLScalarType = getGraphQLDateType();
+
+        if (graphQLScalarType == null) {
+            graphQLScalarType = graphQLSchemaConfig.getGraphQLTypeResolvers()
+                    .stream()
+                    .filter(resolver -> resolver.getType().isAssignableFrom((Class<?>) cls))
+                    .findFirst()
+                    .map(resolver -> resolver.resolve(graphQLSchemaConfig))
+                    .orElse(null);
         }
+
         return graphQLScalarType;
-    }
-
-    private GraphQLScalarType getGraphQLDateType() {
-        return new GraphQLDateType("Date", "Date formatted according to defined format string", graphQLSchemaConfig.getDateFormat());
-    }
-
-    private GraphQLScalarType getGraphQLLocalDateTimeType() {
-        return new GraphQLLocalDateTimeType("LocalDateTime", "LocalDateTime formatted according to defined format string", graphQLSchemaConfig.getDateFormat());
     }
 
     // ---
