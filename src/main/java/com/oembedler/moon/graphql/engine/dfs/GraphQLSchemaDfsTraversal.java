@@ -288,7 +288,7 @@ public class GraphQLSchemaDfsTraversal {
                     .deprecate(resolvableTypeAccessor.getGraphQLDeprecationReason())
                     .description(resolvableTypeAccessor.getDescription());
 
-            boolean isConstant = Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers());
+            boolean isConstant = isPublicConstant(field);
             if (isConstant) {
                 graphQLFieldDefinitionBuilder.staticValue(org.springframework.util.ReflectionUtils.getField(field, null));
             }
@@ -297,6 +297,13 @@ public class GraphQLSchemaDfsTraversal {
         }
 
         return graphQLFieldDefinition;
+    }
+
+    private boolean isPublicConstant(Field field) {
+        int modifiers = field.getModifiers();
+        return Modifier.isFinal(modifiers)
+                && Modifier.isStatic(modifiers)
+                && !Modifier.isPrivate(modifiers);
     }
 
     public void addToFieldDefinitionResolverMap(DfsContext dfsContext, GraphQLFieldDefinition graphQLFieldDefinition, String complexitySpelExpression) {
