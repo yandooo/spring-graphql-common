@@ -19,7 +19,13 @@
 
 package com.oembedler.moon.graphql.engine;
 
+import com.oembedler.moon.graphql.engine.dfs.GraphQLTypeResolver;
+import com.oembedler.moon.graphql.engine.type.resolver.DateTypeResolver;
+import com.oembedler.moon.graphql.engine.type.resolver.LocalDateTimeResolver;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:java.lang.RuntimeException@gmail.com">oEmbedler Inc.</a>
@@ -37,6 +43,12 @@ public class GraphQLSchemaConfig {
     private String schemaMutationObjectName = "Mutation";
     private boolean dateAsTimestamp = true;
     private String dateFormat = "yyyy-MM-dd'T'HH:mm'Z'";
+    private List<GraphQLTypeResolver> graphQLTypeResolvers = new ArrayList<>();
+
+    {
+        graphQLTypeResolvers.add(new DateTypeResolver());
+        graphQLTypeResolvers.add(new LocalDateTimeResolver());
+    }
 
     // ---
 
@@ -115,6 +127,15 @@ public class GraphQLSchemaConfig {
     public void setDateFormat(String dateFormat) {
         Assert.notNull(dateFormat, "Date format string can not be null!");
         this.dateFormat = dateFormat;
+    }
+
+    public void addGraphQLTypeResolver(GraphQLTypeResolver graphQLTypeResolver) {
+        Assert.notNull(graphQLTypeResolver, "GraphQl resolver cannot be null!");
+        this.graphQLTypeResolvers.add(graphQLTypeResolver);
+    }
+
+    public List<GraphQLTypeResolver> getGraphQLTypeResolvers() {
+        return graphQLTypeResolvers;
     }
 
     public boolean isDateAsTimestamp() {

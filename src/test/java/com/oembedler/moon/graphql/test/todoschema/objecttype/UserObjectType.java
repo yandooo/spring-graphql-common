@@ -20,11 +20,9 @@
 package com.oembedler.moon.graphql.test.todoschema.objecttype;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.oembedler.moon.graphql.engine.stereotype.*;
 import com.oembedler.moon.graphql.test.GenericTodoSchemaParserTest;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +35,7 @@ public class UserObjectType extends BaseObjectType {
 
     private String name;
     private ROLE role;
+    private Date created;
 
     @GraphQLIgnore
     private UserObjectType manager;
@@ -68,6 +67,14 @@ public class UserObjectType extends BaseObjectType {
 
     public void setRole(ROLE role) {
         this.role = role;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
     @GraphQLField("manager")
